@@ -2,3 +2,14 @@
 .venv/
 .pytest_cache/
 __pycache__/
+
+motion_detection/assets/
+
+motion_detection/video/*
+!motion_detection/video/.gitkeep
+
+motion_detection/out/*
+!motion_detection/out/.gitkeep
+
+motion_detection/img/*
+!motion_detection/img/.gitkeep
