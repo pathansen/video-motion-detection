@@ -1,9 +1,9 @@
 import numpy as np
 
-from utils.fourier_transform import FourierTransform
+from .utils.fourier_transform import FourierTransform
 
 
-class PhasePlaneCorrelation(object):
+class PhaseCorrelation(object):
 
     @classmethod
     def detect_motion(self, g1, g2, local=False):

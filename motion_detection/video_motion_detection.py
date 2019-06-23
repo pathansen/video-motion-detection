@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pylab as pl
 from PIL import Image
 
-from phase_plane_correlation import PhasePlaneCorrelation
+from .phase_correlation import PhaseCorrelation
 
 
 class VideoMotionDetection(object):
@@ -17,7 +17,7 @@ class VideoMotionDetection(object):
             img_hgt=0,
             local=False,
             block_size=None,
-            verbose=True):
+            verbose=False):
         """
         Detect motion in a video sequence frame by frame.
 
@@ -39,6 +39,7 @@ class VideoMotionDetection(object):
 
         # Get all video frames
         all_frames = os.listdir(path_to_frames)
+        all_frames.remove('.gitkeep')
 
         # Figure size setup
         fig = plt.gcf()
@@ -51,9 +52,9 @@ class VideoMotionDetection(object):
             crnt_frame = all_frames[i]
 
             # Open frames (and convert to grayscale)
-            g1 = Image.open(path_to_frames + '/' + prev_frame).convert(
+            g1 = Image.open(path_to_frames + prev_frame).convert(
                 'LA').resize((img_wdt, img_hgt), Image.ANTIALIAS)
-            g2 = Image.open(path_to_frames + '/' + crnt_frame).convert(
+            g2 = Image.open(path_to_frames + crnt_frame).convert(
                 'LA').resize((img_wdt, img_hgt), Image.ANTIALIAS)
 
             # Convert frames to numpy arrays
@@ -70,7 +71,7 @@ class VideoMotionDetection(object):
 
             # TODO: Add local motion support here
             # Detect motion between frames
-            p = PhasePlaneCorrelation.detect_motion(g1, g2, local=False)
+            p = PhaseCorrelation.detect_motion(g1, g2, local=False)
             if verbose:
                 print('{} --> {} : {}'.format(prev_frame, crnt_frame, p))
 
@@ -78,21 +79,12 @@ class VideoMotionDetection(object):
             origin = [org_wdt // 2], [org_hgt // 2]
             Q = pl.quiver(*origin, p[0], -p[1], color=['r'], scale=21)
 
-            pl.pause(.2)
+            # pl.pause(.2)
             pl.draw()
-            pl.savefig('./assets/test.png', bbox_inches='tight', pad_inches=0)
+            pl.savefig(os.path.join(os.getcwd(), 'motion_detection',
+                       'out', 'out_%03d.png' % i))
 
             for artist in plt.gca().lines + plt.gca().collections:
                 artist.remove()
 
             prev_frame = all_frames[i]
-
-
-if __name__ == '__main__':
-    print('working\n')
-    VideoMotionDetection.run(
-        path_to_frames='./assets/',
-        org_wdt=64,
-        org_hgt=64,
-        img_wdt=64,
-        img_hgt=64)
