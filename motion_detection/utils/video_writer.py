@@ -13,11 +13,23 @@ class VideoWriter(object):
         :param fps: Frame rate of output video
         """
 
-        filename = './motion_detection/video/out.mp4'
+        # Input sequence of images
+        stream = ffmpeg.input(os.path.join(
+                                os.getcwd(),
+                                'motion_detection',
+                                'out',
+                                'out_%3d.png'))
 
-        # stream = ffmpeg.input('img/img_%3d.png')
-        stream = ffmpeg.input(os.path.join(os.getcwd(), 'motion_detection',
-                              'out', 'out_%3d.png'))
+        # Set frame rate (default is 30 frames per second)
         stream = ffmpeg.filter(stream, 'fps', fps=fps)
-        stream = ffmpeg.output(stream, filename)
+
+        # Output video sequence
+        stream = ffmpeg.output(stream,
+                               os.path.join(
+                                   os.getcwd(),
+                                   'motion_detection',
+                                   'video',
+                                   filename))
+
+        # Generate output video
         ffmpeg.run(stream)
