@@ -71,20 +71,47 @@ class VideoMotionDetection(object):
 
             # TODO: Add local motion support here
             # Detect motion between frames
-            p = PhaseCorrelation.detect_motion(g1, g2, local=False)
-            if verbose:
-                print('{} --> {} : {}'.format(prev_frame, crnt_frame, p))
+            if local is False:
+                p = PhaseCorrelation.detect_motion(g1, g2, local=local)
+                if verbose:
+                    print('{} --> {} : {}'.format(prev_frame, crnt_frame, p))
+            else:
+                p = PhaseCorrelation.detect_motion(g1, g2, local=local,
+                                                   block_size=block_size)
+                print('{} --> {} : '.format(prev_frame, crnt_frame), p)
 
-            # Draw frames here...
-            origin = [org_wdt // 2], [org_hgt // 2]
-            Q = pl.quiver(*origin, p[0], -p[1], color=['r'], scale=21)
+            # Draw frames here
+            if local is False:
+                origin = [org_wdt // 2], [org_hgt // 2]
+                Q = pl.quiver(*origin, p[0], -p[1], color=['r'], scale=21)
 
-            # pl.pause(.2)
-            pl.draw()
-            pl.savefig(os.path.join(os.getcwd(), 'motion_detection',
-                       'out', 'out_%03d.png' % i))
+                pl.draw()
+                pl.savefig(os.path.join(os.getcwd(), 'motion_detection',
+                           'out', 'out_%03d.png' % i))
 
-            for artist in plt.gca().lines + plt.gca().collections:
-                artist.remove()
+                for artist in plt.gca().lines + plt.gca().collections:
+                    artist.remove()
+            else:
+                count = 0
+                origin_x = org_wdt // (2 * hrz_blocks)
+                origin_y = org_hgt // (2 * vrt_blocks)
+                for h in range(hrz_blocks):
+                    for v in range(vrt_blocks):
+                        origin = [origin_x], [origin_y]
+                        pl.quiver(*origin, p[count][0] / (2 * hrz_blocks),
+                                  -p[count][1] / (2 * vrt_blocks), color=['r'],
+                                  scale=20)
+                        pl.draw()
+                        origin_y += org_hgt // vrt_blocks
+                        count += 1
+                    origin_y = org_hgt // (2 * vrt_blocks)
+                    origin_x += org_wdt // hrz_blocks
+
+                pl.savefig(os.path.join(os.getcwd(),
+                                        'motion_detection',
+                                        'out', 'out_%03d.png' % i),
+                           dpi='figure')
+                for artist in plt.gca().lines + plt.gca().collections:
+                    artist.remove()
 
             prev_frame = all_frames[i]

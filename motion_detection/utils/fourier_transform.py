@@ -63,7 +63,7 @@ class FourierTransform(object):
         """
 
         # Get image width and height
-        img_hgt, img_wdt = F_img.shape
+        img_hgt, img_wdt = G_img.shape
 
         # Setup blocks based on block_size parameter
         if block_size is None:
@@ -75,7 +75,7 @@ class FourierTransform(object):
             hrz_blocks = img_wdt // block_size[1]
 
         # Array of complex data type for output of Inverse Fourier Transform
-        f_img = np.zeros((img_hgt, img_wdt), dtype=complex)
+        g_img = np.zeros((img_hgt, img_wdt), dtype=complex)
 
         i_min, i_max = 0, block_size[0]
         j_min, j_max = 0, block_size[1]
@@ -83,8 +83,8 @@ class FourierTransform(object):
             for j in range(hrz_blocks):
 
                 # Take Inverse Fast Fourier Transform of current block
-                current_img = F_img[i_min:i_max, j_min:j_max]
-                f_img[i_min:i_max, j_min:j_max] = np.fft.ifft2(current_img)
+                current_img = G_img[i_min:i_max, j_min:j_max]
+                g_img[i_min:i_max, j_min:j_max] = np.fft.ifft2(current_img)
 
                 j_min += block_size[1]
                 j_max += block_size[1]
@@ -93,4 +93,4 @@ class FourierTransform(object):
             i_max += block_size[0]
             j_min, j_max = 0, block_size[1]
 
-        return f_img
+        return g_img
