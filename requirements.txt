@@ -11,7 +11,7 @@ more-itertools==7.0.0
 numpy==1.16.4
 packaging==19.0
 pep8==1.7.1
-Pillow==6.0.0
+Pillow==8.1.1
 pluggy==0.12.0
 py==1.8.0
 pycodestyle==2.5.0
